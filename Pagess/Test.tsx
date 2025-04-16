@@ -1,7 +1,7 @@
 "use client"
 
 import db from "@/types/firebase"
-import { Test, TestQuestion, TestWithID } from "@/types/types";
+import { LeaderBoardEntryDB, Test, TestQuestion, TestWithID } from "@/types/types";
 import { format } from "date-fns/format";
 import { getDoc, doc, updateDoc, arrayUnion, setDoc, increment } from "firebase/firestore"
 import { useEffect, useState } from "react";
@@ -17,33 +17,6 @@ import RollNoContainer from "@/Components/RollNoContainer";
 
 function getGradeFromId(id: string) {
     return Number(id.charAt(6));;
-}
-
-function calculateExpireDate() {
-    const currentDate = new Date();
-
-    // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-    const currentDay = currentDate.getDay();
-
-    // Check if the current date is the 1st of June
-    if (currentDate.getDate() === 1 && currentDate.getMonth() === 5) { // Months are zero-indexed
-        // If the current day is Monday (1), set the expiry date to Sunday (0) of the same week
-        if (currentDay === 1) {
-            currentDate.setDate(currentDate.getDate() + 6 - currentDay);
-        }
-        // If the current day is Sunday (0), set the expiry date to the next Sunday (7 days ahead)
-        else if (currentDay === 0) {
-            currentDate.setDate(currentDate.getDate() + 7);
-        }
-        // For other days, set the expiry date to the next Saturday (6 - currentDay days ahead)
-        else {
-            currentDate.setDate(currentDate.getDate() + 6 - currentDay);
-        }
-    }
-
-    // Get the expiry date as the number of milliseconds since January 1, 1970
-    const expiryTime = currentDate.getTime();
-    return expiryTime;
 }
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -79,13 +52,14 @@ export default function Page({ params }: { params: { id: string } }) {
         if (rollNo === "---") return;
         if (submissionMadeList === null) return;
         setSubmissionMade(submissionMadeList.includes(rollNo));
-        getPassword(rollNo).then((password) => setCorrectPassword(password))
+        getPassword(rollNo).then((password) => setCorrectPassword(password));
     }, [rollNo, submissionMadeList]);
+
+    // console.log("Correct password for roll no", rollNo, "is", correctPassword);
 
     useEffect(() => {
         getDoc(doc(db[getGradeFromId(params.id)], "test", params.id)).then(async (test) => {
             const data = { ...test.data(), id: test.id } as (Test & { id: string });
-            localStorage.setItem(params.id, JSON.stringify({ data, expireDate: calculateExpireDate() }));
             setTestdata(data);
             setSubmissionMadeList(data.responses.map(i => i.rollNumber));
             setStudentsList(gradeWiseStudentsList[Number(data.class) - 1][data.section] as string[]);
@@ -130,16 +104,34 @@ export default function Page({ params }: { params: { id: string } }) {
             }, { merge: true });
 
         //Step 3: add response to leaderboard data
+        let docData = (await getDoc(doc(db[0], "leaderboard", `grade_${getGradeFromId(params.id)}`))).data();
+
+        if (typeof docData === "undefined") {
+            docData = ({ students: [] });
+        }
+
+        let docLead = docData.stufdents as LeaderBoardEntryDB["marks"];
+
+        if (typeof docLead === "undefined") {
+            docLead = [];
+        }
+
+        const alreadyExistingScore = docLead.filter((i) => i.rollNumber === rollNo);
+
+        const score = alreadyExistingScore.reduce((acc, prev) => acc + prev.score, 0);
+
+        const toSetArray = docLead.filter((i) => i.rollNumber !== rollNo);
+
+        localStorage.setItem(`totalScore-${rollNo}`, String(score + (marks * 5)));
+
         await setDoc(doc(db[0], "leaderboard", `grade_${getGradeFromId(params.id)}`), {
-            students: arrayUnion({
+            students: [...toSetArray, {
                 rollNumber: studentDocName,
-                score: marks * 5,
-            })
+                score: score + (marks * 5),
+            }]
         }, { merge: true });
 
         alert("Submitted successfully!");
-
-
         setSubmissionMadeList(prev => prev !== null ? [...prev, rollNo] : [rollNo]);
         setSubmissionMade(true);
     }

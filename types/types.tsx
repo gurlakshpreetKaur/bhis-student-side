@@ -62,7 +62,7 @@ export type { Grades, Student, TestQuestion, Test, StudentTestOverView, TestWith
 
 interface LeaderBoardEntryDB {
     grade: number;
-    students: LeaderboardEntryUnit[]
+    marks: LeaderboardEntryUnit[]
 }
 
 interface LeaderboardEntryUnit {
