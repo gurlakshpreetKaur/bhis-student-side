@@ -75,17 +75,22 @@ function getSectionFromRollNo(rollNo: string) {
 }
 
 export default function Home() {
-    const [relData, setRelData] = useState<StudentWithID[]>([]);
+    const [relData, setRelData] = useState<StudentWithID[] | null>(null);
 
     const [gradeToView, setGradeToView] = useState<number>(1);
 
     useEffect(() => {
         getDoc(doc(db[0], "leaderboard", `grade_${gradeToView}`)).then((doc) => {
-            if (!doc.exists()) return;
+            if (!doc.exists()) {
+                setRelData([]);
+                return;
+            };
+
+            console.log(doc, doc.data());
 
             const studentsData = doc.data() as LeaderBoardEntryDB;
 
-            const studentsDataEntries = studentsData.students;
+            const studentsDataEntries = studentsData.marks;
 
             const studentsDataFormatted: StudentWithID[] = studentsDataEntries.map(i =>
             ({
@@ -96,6 +101,8 @@ export default function Home() {
                 section: getSectionFromRollNo(i.rollNumber),
                 responses: []
             }))
+
+            console.log(studentsDataFormatted);
 
             setRelData(studentsDataFormatted);
         });
@@ -152,15 +159,16 @@ export default function Home() {
             </div>
 
             <div className="py-12">
-                {relData && sections.map((sections, index) => {
-                    return sections.map((section, j) => {
-                        const D = getDataOfClassAndSection(String(index + 1), section);
-                        if (D === null) return <></>;
-                        return <LeaderboardTable
-                            data={D}
-                            grade={String(Number(index) + 1)}
-                            section={section} key={`${index}_${j}`} />
-                    })
+                {relData !== null && relData.length === 0 && <div className="text-center py-5 px-4">
+                    <p className="text-center">No submissions have been received from this class yes!</p>
+                </div>}
+                {relData !== null && relData.length > 0 && sections[gradeToView - 1].map((section, index) => {
+                    const D = getDataOfClassAndSection(String(gradeToView), section);
+                    if (D === null) return <></>;
+                    return <LeaderboardTable
+                        data={D}
+                        grade={String(gradeToView)}
+                        section={section} key={`${index}_${gradeToView}_${section}`} />
                 })}
             </div>
         </section>

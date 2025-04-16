@@ -96,7 +96,7 @@ const gradeFourIris: string[] = [
     "Tejsawaini Gautam",
     "Vaibhav Singh Thakur",
     "Viraj Pratap Singh",
-    "Yaksh Nagwani"
+    "Yaksh Nagwani",
 ].sort();
 
 const gradeFourBluebell = [
@@ -386,7 +386,9 @@ const gradeSixIris = [
     "Tanishk Tiwari",
     "Vansh Kakwani",
     "Vipanchi Gautam",
-    "Zyana Swamy"
+    "Zyana Swamy",
+    "Zz. Saanvi Singh",
+    "Zzz. Ayushman Mishra",
 ].sort();
 
 const gradeSixPeony = [
@@ -418,7 +420,9 @@ const gradeSixPeony = [
     "Siddhi Gupta",
     "Viraj Singh Chauhan",
     "Yashika Singh",
-    "Yashwardhan Yadav"
+    "Yashwardhan Yadav",
+    "Zz. Aditya Sahu",
+    "Zz. Viraj Singh Chauhan",
 ].sort();
 
 const gradeSevenIris = [
@@ -446,7 +450,11 @@ const gradeSevenIris = [
     "Siddharth Mishra",
     "Vansh Sahu",
     "Vedyansh Singh Parihar",
-    "Yuvan Pandey"
+    "Yuvan Pandey",
+    "Zzz. Bhagyesh Shukla",
+    "Zzz. Dishant Mishra",
+    "Zzz. Saumy Mishra",
+    "Zzzz. Jiya Singh"
 ].sort();
 
 const gradeOneIris = [
@@ -483,7 +491,8 @@ const gradeOneIris = [
     "Shrishti Mishra",
     "Arna Gupta",
     "Shashwat Mishra",
-    "Supriya Singh Thakur"
+    "Supriya Singh Thakur",
+    "Zz. Aryaditya Singh"
 ].sort();
 
 const gradeSevenPeony = [
@@ -511,7 +520,9 @@ const gradeSevenPeony = [
     "Saanvika Suman",
     "Sayhan Ali",
     "Suryansh Sharma",
-    "Yuvraj Singh"
+    "Yuvraj Singh",
+    "Zz Blank No Student Allocated, Recheck roll no",
+    "Zz. Anika Kohli"
 ].sort();
 
 const gradeFivePeony = [
@@ -546,7 +557,8 @@ const gradeFivePeony = [
     "Prithvi Tiwari",
     "Jignesh Patel",
     "Adya Tiwari",
-    "Sarvesh Singh Parihar"
+    "Sarvesh Singh",
+    "Zz. Mahi Singh Baghel"
 ].sort();
 
 export const gradeWiseStudentsList: { [index: string]: string[] }[] = [
